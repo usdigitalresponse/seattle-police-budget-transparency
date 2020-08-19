@@ -99,7 +99,7 @@ body {
 .baner-content {
   width: 100%;
   min-height: 100vh;
-  background: #023da5;
+  background: #013DA5;
 }
 
 .service-content {
@@ -111,7 +111,16 @@ body {
   background: #F3F4F8;
 }
 .survey-form-header {
-  background: #023da5;
+  background: #013DA5;
+}
+
+
+.font-weight-600 {
+  font-weight: 600 !important;
+}
+
+.text-btn {
+  color: #4C2C92;
 }
 
 th {
@@ -141,4 +150,58 @@ footer {
   .container {
     max-width: 1170px;
   }
+}
+
+text {
+  pointer-events: none;
+}
+.grandparent text {
+  font-weight: bold;
+}
+
+rect {
+  stroke: #fff;
+  stroke-width: 0.4px;
+}
+
+.grandparent:hover rect {
+  fill: grey;
+}
+
+.grandparent {
+  cursor: pointer;
+}
+
+.textdiv {
+  font-size: 14px;
+  padding: 7px;
+  overflow:none;
+}
+.textdiv .title {
+  font-size: 102%;
+  font-weight: bold;
+  margin-top: 8px;
+  font-size:11px !important;
+}
+.textdiv p{
+  line-height: 13px;
+  margin:0 0 4px !important;
+  padding:0px;
+  font-size:10px !important;
+}
+
+foreignObject.foreignobj {
+    color: #fff;
+}
+
+.toolTip {
+  position: absolute;
+  display: none;
+  width: auto;
+  max-width: 300px;
+  height: auto;
+  background: none repeat scroll 0 0 white;
+  border: 0 none;
+  border-radius: 8px 8px 8px 8px;
+  box-shadow: -3px 3px 15px #888888;
 }

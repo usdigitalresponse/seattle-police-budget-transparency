@@ -4,7 +4,7 @@
 <head>
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-  <title>SPD</title>
+  <title>Seattle Police Department</title>
   <meta name="description" content="">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="apple-touch-icon" href="apple-touch-icon.png">
@@ -18,6 +18,9 @@
   <link rel="stylesheet" href="css/main.css">
 
   <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,600,700,800" rel="stylesheet">
+  <style>
+
+  </style>
 </head>
 
 <body>
@@ -34,12 +37,12 @@
     <div class="container-fluid">
       <div class="row">
         <div class="col-md-12">
-          <img class="p-5 img-fluid" src="img/logo.png" alt="city of seattle">
+          <img class="p-5 img-fluid" src="img/logo.svg" alt="city of seattle">
         </div>
       </div>
       <div class="text-center">
         <div class="home-content">
-          <div class="text-muted text-uppercase font-weight-bold data-update-datetime">updated july 14 2020, at 10:20 pm
+          <div class="text-muted text-uppercase font-weight-600 data-update-datetime">updated july 14 2020, at 10:20 pm
           </div>
           <div class="text-capitalize text-white">
             <h1 class="page-title">open budget seattle</h1>
@@ -48,7 +51,7 @@
             <p class="text-light">Open Budget Seattle is part of the City of Seattle's commitment to transparency, data
               and dialogue.</p>
           </div>
-          <a class="btn btn-light text-primary" href="#survey">Take the Survey</a>
+          <a class="btn btn-light rounded-0 text-btn font-weight-bold" href="#survey">Take the Survey</a>
         </div>
       </div>
     </div>
@@ -56,13 +59,13 @@
       <div class="row mt-5 py-5 border-top border-light">
         <div class="col-md-6 text-center border-right border-light">
           <h2 class="text-white">$6.5 Billion</h2>
-          <p class="text-capitalize text-light">Total 2020 operating budget</p>
-          <span class="badge badge-danger"> <i class="fa fa-caret-up" aria-hidden="true"></i> $500M</span>
+          <p class="text-capitalize text-light">Total 2020 City of Seatlle Adopted Budget</p>
+          <span class="badge badge-danger"> <i class="fa fa-caret-up" aria-hidden="true"></i> $600M</span>
         </div>
         <div class="col-md-6 text-center">
-          <h2 class="text-white">$420 Million</h2>
-          <p class="text-capitalize text-light">Total 2020 spd budget</p>
-          <span class="badge badge-danger"><i class="fa fa-caret-up" aria-hidden="true"></i> $250</span>
+          <h2 class="text-white">$409 Million</h2>
+          <p class="text-capitalize text-light">Total 2020 SPD Adopted budget</p>
+          <span class="badge badge-danger"><i class="fa fa-caret-up" aria-hidden="true"></i> $10.5M</span>
         </div>
       </div>
     </div>
@@ -73,8 +76,13 @@
     <div class="container py-5">
       <div class="row">
         <div class="col-md-12">
-          <h1 class="text-white">2020 SPD Budget</h1>
-          <p class="text-light">We invite you to explore our presentation of the fund allocation for the Seattle Police
+          <div class="d-flex">
+            <h1 class="text-white">2020 SPD Budget by <span id="chart-title">Bureau</span></h1>
+            <div class="ml-auto">
+              <a href="data.csv" download="data.csv" class="btn btn-light mt-2">Export as CSV</a>
+            </div>
+          </div>
+          <p class="text-light">We invite you to explore our presentation of the budget and functions of the Seattle Police
             Department</p>
           <div class="treemap mb-5"></div>
           <div class="data-table mt-5">
@@ -88,9 +96,9 @@
                 </thead>
                 <tbody>
                   <% _.each(data, function(row){ %>
-                  <tr id='row-<%= row["Function Name"].replace(/[^A-Z0-9]/ig, "_") %>'>
-                    <td><%= row['Function Name']%></td>
-                    <td><%= formatter.format(+row['Budget']) %></td>
+                  <tr id='row-<%= row["name"].replace(/[^A-Z0-9]/ig, "_") %>'>
+                    <td><%= row['name']%></td>
+                    <td><%= formatter.format(+row['budget']) %></td>
                   </tr>
                   <% }) %>
                 </tbody>
@@ -105,18 +113,19 @@
 
   <div class="spd-content contact-content" id="survey">
     <div class="survey-form-header d-flex flex-row justify-content-center">
-      <div class="py-5">
-        <h1 class="text-white">2020 SPD Budgeting Survey</h1>
-        <p class="text-light">Open Budget Seatlle is in the early stages of testing a plan to introduce
-          perticipatory budgeting to next years budget.</p>
+      <div class="px-4 py-5">
+        <h1 class="text-white">Community Safety Survey</h1>
+        <p class="text-light">The City of Seattle is working to transform policing and reinvest in community of color. We’re looking
+          for further insight into our communities and their priorities through an open, continued
+          conversation. Open</p>
         <p class="text-light">Use the survey below to help us make positive change by submitting feedback and making
-          suggestions to out data.</p>
+          suggestions to our data.</p>
       </div>
     </div>
     <div class="d-flex flex-row justify-content-center">
       <iframe
-        src="https://docs.google.com/forms/d/e/1FAIpQLSdBlZWIr6_771Qz4AOrOFMozrMDX9qxXMKCLTg2acAaGR2QiA/viewform?embedded=true"
-        width="640" height="1186" frameborder="0" marginheight="0" marginwidth="0">Loading…</iframe>
+        src="https://docs.google.com/forms/d/e/1FAIpQLSeaJ2tAwYENDxtW97GK3rDyr0MRu9MgLGjCiqqkU9qB4x7AcA/viewform?usp=sf_link"
+        width="100%" height="5200" frameborder="0" marginheight="0" marginwidth="0">Loading…</iframe>
     </div>
   </div>
 

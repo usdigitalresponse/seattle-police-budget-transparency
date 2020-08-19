@@ -1,115 +1,308 @@
-/* jshint esversion: 6 */
+function csvtojson(datum){
+  var nested_data = d3.nest()
+    .key(function(d) { return d['Bureau']; })
+    .key(function(d) { return d['Function Name']; })
+    .entries(datum);
 
-class treeMap {
-  constructor(dom, data, config) {
-    this.data = data;
-    this.element = dom;
-    this.value = config.value || 'value';
-    this.name = config.name || 'name';
+  data = {"name": "SPD", children: []}
+  var _children = function(cdh){
+    var t = []
+    cdh.forEach(d => {
+      var child = {name: d.key, value: +d.values[0].Budget, ...d}
+      t.push(child)
+    })
+    return t
+  }
+  nested_data.forEach(d => data.children.push({"name": d.key, children: _children(d.values)}))
+  // data.children = data.children.filter(d => d.name != "")
+  return data
+}
 
-    // create the chart
-    this.draw();
+var state = 1;
+var $datatable = $('script#datatable')
+function drawTable(data, _filter){
+  col = 'Bureau';
+  if(_filter != 'SPD'){
+    state = 2;
+    col = 'Function Name'
+    data = data.filter(d => d.Bureau == _filter)
+  } else {
+    state = 1;
   }
 
-  draw() {
-    this.margin = {
-      top: 20,
-      right: 20,
-      bottom: 30,
+  $('#chart-title').text(col)
+
+  data =_(data)
+    .groupBy(col)
+    .map((objs, key) => ({
+        'name': key,
+        'budget': _.sumBy(objs, item => +item.Budget) }))
+    .value();
+  $datatable.template({data: _.orderBy(data, ['budget'],['desc'])})
+}
+
+var tool = d3.select("body").append("div").attr("class", "toolTip");
+
+function draw_treemap() {
+  var margin = {
+      top: 30,
+      right: 0,
+      bottom: 20,
       left: 0
-    };
-    this.width = 960 - this.margin.left - this.margin.right;
-    this.height = 500 - this.margin.top - this.margin.bottom;
+    },
+    width = 960 - 25,
+    height = 500 - margin.top - margin.bottom,
+    formatNumber = d3.format(","),
+    transitioning;
 
-    this.w = this.width + this.margin.left + this.margin.right;
-    this.h = this.height + this.margin.top + this.margin.bottom;
+  var x = d3.scaleLinear()
+    .domain([0, width])
+    .range([0, width]);
+  var y = d3.scaleLinear()
+    .domain([0, height])
+    .range([0, height]);
+  var treemap = d3.treemap()
+    .size([width, height])
+    .paddingInner(0)
+    .round(false);
 
-    this.element.innerHTML = '';
-    const svg = d3.select(this.element).append('svg');
-    // svg.attr("height", 300);
-    svg.attr('preserveAspectRatio', 'xMinYMin meet');
-    svg.attr('viewBox', '0 0 ' + this.w + ' ' + this.h);
+  var w = width + margin.left + margin.right,
+    h = height + margin.bottom + margin.top;
 
-    this.plot = svg.append("g")
-      .attr("transform", "translate(" + this.margin.left + "," + this.margin.top + ")");
+  var svg = d3.select('.treemap').append("svg")
+    .attr('preserveAspectRatio', 'xMinYMin meet')
+    .attr('viewBox', '0 0 ' + w + ' ' + h)
+    .style("margin-left", -margin.left + "px")
+    .style("margin.right", -margin.right + "px")
+    .append("g")
+    .attr("transform", "translate(" + margin.left + "," + margin.top + ")")
+    .style("shape-rendering", "crispEdges");
 
-    this.treemap = d3.treemap()
-      .padding(1)
-      .round(true);
+  var grandparent = svg.append("g")
+    .attr("class", "grandparent");
+  grandparent.append("rect")
+    .attr("y", -margin.top)
+    .attr("width", width)
+    .attr("height", margin.top)
+    .attr("fill", '#bbbbbb');
+  grandparent.append("text")
+    .attr("x", 6)
+    .attr("y", 6 - margin.top)
+    .attr("dy", ".75em");
 
-    // create the other stuff
-    this.drawShapes();
-  }
-
-  drawShapes() {
-    let _this = this;
-    let duration = 1000;
-
-    let root = d3.hierarchy(this.data)
-      .sum(d => d[this.value])
-      .sort((a, b) => b[this.value] - a[this.value]);
-
-    this.treemap.size([this.w, this.h]);
-    const leaves = this.treemap(root).leaves();
-
-    var _values = leaves.map(d => +d.data[this.value])
-
-    const rects = this.plot.selectAll(".rect")
-      .data(leaves, d => d.data[this.name]);
-
-    const labels = this.plot.selectAll(".label")
-      .data(leaves.filter(f => f.x1 - f.x0 > 60 && f.y1 - f.y0 > 30), d => d.data[this.name]);
-
-    rects.exit()
-      .transition().duration(duration)
-      .remove();
-
-    rects.transition().duration(duration)
-      .attr("transform", d => `translate(${d.x0},${d.y0})`)
-      .attr("width", d => d.x1 - d.x0)
-      .attr("height", d => d.y1 - d.y0);
-
-    var linearcolors = d3.scaleLinear()
-      .domain(d3.extent(_values.sort().reverse().filter((_,i) => i)))
-      .range(['#0525da', '#3259dc'])
-      .interpolate(d3.interpolateHcl);
-
-    rects.enter().append("rect")
-      .attr("class", "rect")
-      .style("fill", function(d){
-        return +d.data[_this.value] >= d3.max(_values) ? '#ff3247' : '#3259dc';
+  d3.csv("data.csv").then(function (df) {
+    var clonedata = df;
+    drawTable(df, 'SPD')
+    df = csvtojson(df)
+    var root = d3.hierarchy(df);
+    treemap(root
+      .sum(function (d) {
+        return d.value;
       })
-      .attr("transform", d => `translate(${d.x0},${d.y0})`)
-      .attr("width", d => d.x1 - d.x0)
-      .attr("height", d => d.y1 - d.y0)
-      .transition().duration(duration);
+      .sort(function (a, b) {
+        return b.height - a.height || b.value - a.value
+      })
+    );
 
-    labels.exit()
-      .style("opacity", 1)
-      .transition().duration(duration)
-      .style("opacity", 1e-6)
-      .remove();
+    display(root);
 
-    labels.enter().append("text")
-      .attr("class", "label")
-      .attr("dy", "0.9em")
-      .attr("dx", "0.35em")
-      .attr('width', d => d.x1 - d.x0)
-      .attr('x', d => d.x0)
-      .attr('y', d => d.y0)
-      // .attr("transform", d => `translate(${d.x0}, ${d.y0})`)
-      .text(d => d.data[this.name])
-      .attr('font-size', '0.6em')
-      // .html(d => `<tspan style='font-size: 0.8em'>${d.data[this.name]}</tspan>`)
-      .style("opacity", 1e-6)
-      .attr('fill', '#fff')
-      .transition().duration(duration)
-      .style("opacity", 1);
-  }
+    function display(d) {
+      grandparent
+        .datum(d.parent)
+        .on("click", transition)
+        .select("text")
+        .text(name(d));
 
-  update(newData) {
-    this.data = newData;
-    // update shapes
-    this.drawShapes();
-  }
+      grandparent
+        .datum(d.parent)
+        .select("rect")
+        .attr("fill", function () {
+          return '#bbbbbb'
+        });
+      var g1 = svg.insert("g", ".grandparent")
+        .datum(d)
+        .attr("class", "depth");
+
+      var g = g1.selectAll("g")
+        .data(d.children)
+        .enter()
+        .append("g");
+
+      g.filter(function (d) {
+          return d.children;
+        })
+        .classed("children", true)
+        .on("click", transition);
+
+      g.selectAll(".child")
+        .data(function (d) {
+          return d.children || [d];
+        })
+        .enter().append("rect")
+        .attr("class", "child")
+        .call(rect);
+
+      g.append("rect")
+        .attr("class", "parent")
+        .call(rect)
+        .append("title")
+        .text(function (d) {
+          return d.data.name;
+        });
+
+      g.append("foreignObject")
+        .call(rect)
+        .attr("class", "foreignobj")
+        .append("xhtml:div")
+          .attr("dy", ".75em")
+          .html(function (d) {
+            return '' +
+              '<p class="title"> ' + d.data.name + '</p>' +
+              '<p>' + formatNumber(d.value) + '</p>';
+          })
+          .attr("class", "textdiv");
+
+      function transition(d) {
+        drawTable(clonedata, d.data.name)
+        if (transitioning || !d) return;
+        transitioning = true;
+        var g2 = display(d),
+          t1 = g1.transition().duration(650),
+          t2 = g2.transition().duration(650);
+
+        x.domain([d.x0, d.x1]);
+        y.domain([d.y0, d.y1]);
+
+        svg.style("shape-rendering", null);
+
+        svg.selectAll(".depth").sort(function (a, b) {
+          return a.depth - b.depth;
+        });
+
+        g2.selectAll("text").style("fill-opacity", 0);
+        g2.selectAll("foreignObject div").style("display", "none");
+
+        t1.selectAll("text").call(text).style("fill-opacity", 0);
+        t2.selectAll("text").call(text).style("fill-opacity", 1);
+        t1.selectAll("rect").call(rect);
+        t2.selectAll("rect").call(rect);
+
+        t1.selectAll(".textdiv").style("display", "none");
+
+        t1.selectAll(".foreignobj").call(foreign);
+
+        t2.selectAll(".textdiv").style("display", "block");
+
+        t2.selectAll(".foreignobj").call(foreign);
+
+        t1.on("end.remove", function () {
+          this.remove();
+          transitioning = false;
+        });
+
+        if(state > 1){
+          svg.selectAll('foreignObject')
+          .on("mousemove", function (d) {
+            tool.style("left", d3.event.pageX + 10 + "px")
+            tool.style("top", d3.event.pageY - 20 + "px")
+            tool.style("display", "inline-block");
+            tool.html(`
+              <div class="container-fluid p-3">
+                <h3>${d.data.name}</h3>
+                <small class="text-muted">${d.data.values[0]['Function Description ']}</small>
+                <div class="my-4">
+                  <h6>Labor Representation</h6>
+                  <div class="text-muted">${d.data.values[0]['Labor Representation']}</div>
+                </div>
+                <div class="d-flex">
+                  <div>
+                    <h6 class="mb-0">Civiian FTE</h6>
+                    <div class="text-primary font-weight-bold">${d.data.values[0]['Civilian FTE']}</div>
+                  </div>
+                  <div class="ml-auto">
+                    <h6 class="mb-0">Sworn FTE</h6>
+                    <div class="text-primary font-weight-bold">${d.data.values[0]['Sworn FTE']}</div>
+                  </div>
+                </div>
+                <div class="mt-2">
+                  <h6 class="mb-0">Budget</h6>
+                  <div class="text-primary font-weight-bold">${formatter.format(d.data.value)}</div>
+                </div>
+              </div>
+            `);
+          })
+          .on("mouseout", function (d) {
+            tool.style("display", "none");
+          });
+        }
+      }
+      return g;
+    }
+
+    function text(text) {
+      text.attr("x", function (d) {
+          return x(d.x) + 6;
+        })
+        .attr("y", function (d) {
+          return y(d.y) + 6;
+        });
+    }
+
+    function rect(rect) {
+      rect
+        .attr("x", function (d) {
+          return x(d.x0);
+        })
+        .attr("y", function (d) {
+          return y(d.y0);
+        })
+        .attr("width", function (d) {
+          return x(d.x1) - x(d.x0);
+        })
+        .attr("height", function (d) {
+          return y(d.y1) - y(d.y0);
+        })
+        .attr("fill", function (d) {
+          let clr = state == 1 ? '#220FCC' : '#C6133D';
+          return clr;
+        });
+    }
+
+    function foreign(foreign) {
+      foreign
+        .attr("x", function (d) {
+          return x(d.x0);
+        })
+        .attr("y", function (d) {
+          return y(d.y0);
+        })
+        .attr("width", function (d) {
+          return x(d.x1) - x(d.x0);
+        })
+        .attr("height", function (d) {
+          return y(d.y1) - y(d.y0);
+        });
+    }
+
+    function name(d) {
+      return breadcrumbs(d) +
+        (d.parent ?
+          " " :
+          " ");
+    }
+
+    function breadcrumbs(d) {
+      var res = "";
+      var sep = " > ";
+      d.ancestors().reverse().forEach(function (i) {
+        res += i.data.name + sep;
+      });
+      return res
+        .split(sep)
+        .filter(function (i) {
+          return i !== "";
+        })
+        .join(sep);
+    }
+  });
 }
