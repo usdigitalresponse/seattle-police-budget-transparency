@@ -1,5 +1,6 @@
 body {
   position: relative; /* we need this for the scrollspy */
+  font-family: 'Open Sans';
 }
 
 /* NAV */
@@ -96,14 +97,21 @@ body {
   min-height: 100vh;
 }
 
-.baner-content {
+.header-content {
   width: 100%;
   min-height: 100vh;
   background: #013DA5;
 }
 
+.intro-content {
+  width: 100%;
+  min-height: 100vh;
+  background: #eee;
+  color: #000;
+}
+
 .service-content {
-  background: #000;
+  background: #333;
   min-height: 100vh;
 }
 
@@ -136,6 +144,14 @@ tr {
 
 footer {
   background-color: #282b2f;
+}
+
+#footerLinks a{
+  color:#fff;
+}
+#footerLinks a:hover{
+  background-color: #fff;
+  color:#000;
 }
 
 @media (max-width: 767px){
