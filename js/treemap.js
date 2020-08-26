@@ -50,8 +50,8 @@ function draw_treemap() {
       bottom: 20,
       left: 0
     },
-    width = 960 - 25,
-    height = 500 - margin.top - margin.bottom,
+    width = 1060 - 25,
+    height = 600 - margin.top - margin.bottom,
     formatNumber = d3.format(","),
     transitioning;
 
@@ -62,6 +62,7 @@ function draw_treemap() {
     .domain([0, height])
     .range([0, height]);
   var treemap = d3.treemap()
+    .tile(d3.treemapSquarify.ratio(1))
     .size([width, height])
     .paddingInner(0)
     .round(false);
