@@ -27,5 +27,6 @@ $(document).ready(function () {
   });
 
   draw_treemap()
+  $('template.datetime').template(refresh_date);
   $('[data-toggle="tooltip"]').tooltip()
 });

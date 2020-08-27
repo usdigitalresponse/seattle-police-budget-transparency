@@ -42,37 +42,38 @@
       </div>
     </div>
 
-    <div class="spd-content intro-content" id="home">
-      <div class="container-fluid">
-        <div class="text-center py-5">
+    <div class="spd-content intro-content d-flex justify-content-center align-items-center" id="home">
+      <div>
+        <div class="text-center pb-5">
           <div class="home-content">
-            <div class="text-muted text-uppercase font-weight-600 data-update-datetime">updated july 14 2020, at 10:20 pm
-            </div>
+            <template class="datetime">
+              <div class="text-muted text-uppercase font-weight-600 data-update-datetime my-4">
+                updated <%= date%>, at <%= time%>
+              </div>
+            </template>
             <div class="text-capitalize text-black">
               <h1 class="page-title">open budget seattle</h1>
             </div>
-            <div>
+            <div class="px-2 px=md-0">
               <p class="text-dark">Open Budget Seattle is part of the City of Seattle's commitment to transparency, data
                 and dialogue.</p>
             </div>
             <a class="btn btn-outline-primary rounded-0 text-btn font-weight-bold" href="#survey">Take the Survey</a>
           </div>
         </div>
-      </div>
-      <div class="container">
-      <div class="row mt-5 py-5 border-top border-dark">
-        <div class="col-md-6 text-center border-right border-dark">
-          <h2 class="text-black">$6.5 Billion</h2>
-          <p class="text-capitalize text-dark">Total 2020 City of Seattle Adopted Budget</p>
-          <span class="badge badge-danger" style="font-size:100%"> <i class="fa fa-caret-up" aria-hidden="true"></i> $600M</span>
+        <div class="row mt-5 py-5 border-top border-dark">
+          <div class="col-md-6 text-center border-right border-dark">
+            <h2 class="text-black">$6.5 Billion</h2>
+            <p class="text-capitalize text-dark">Total 2020 City of Seattle Adopted Budget</p>
+            <span class="badge badge-danger" style="font-size:100%"> <i class="fa fa-caret-up" aria-hidden="true"></i> $600M</span>
+          </div>
+          <div class="col-md-6 text-center">
+            <h2 class="text-black">$409 Million</h2>
+            <p class="text-capitalize text-dark">Total 2020 SPD Adopted budget</p>
+            <h3 class="badge badge-danger" style="font-size:100%"><i class="fa fa-caret-up" aria-hidden="true"></i> $10.5M</h3>
+          </div>
         </div>
-        <div class="col-md-6 text-center">
-          <h2 class="text-black">$409 Million</h2>
-          <p class="text-capitalize text-dark">Total 2020 SPD Adopted budget</p>
-          <h3 class="badge badge-danger" style="font-size:100%"><i class="fa fa-caret-up" aria-hidden="true"></i> $10.5M</h3>
-        </div>
       </div>
-    </div>
   </div>
 
 
@@ -148,6 +149,7 @@
     crossorigin="anonymous"></script>
   <script src="https://cdn.jsdelivr.net/combine/npm/lodash,npm/g1"></script>
   <script src="js/treemap.js"></script>
+  <script src="js/dt.js"></script>
   <script src="js/main.js"></script>
   <link rel="stylesheet" type="text/css" href="//fonts.googleapis.com/css?family=Open+Sans:400,700,800,600,300"   media=all />
 </body>
