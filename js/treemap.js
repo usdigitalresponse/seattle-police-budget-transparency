@@ -146,6 +146,24 @@ function draw_treemap() {
       g.append("rect")
         .attr("class", "parent")
         .call(rect)
+        .on("mousemove", function (d) {
+          if(d.depth == 1) {
+            tool.style("left", d3.event.pageX + 10 + "px")
+            tool.style("top", d3.event.pageY - 20 + "px")
+            tool.style("display", "inline-block");
+            tool.html(`
+              <div class="container-fluid p-3">
+                <h3>${d.data.name}</h3>
+                <small class="text-muted">${d.data.value}</small>
+              </div>
+            `);
+          }
+        })
+        .on("mouseout", function (d) {
+          if(d.depth == 1) {
+            tool.style("display", "none");
+          }
+        })
         .append("title")
         .text(function (d) {
           return d.data.name;
@@ -154,6 +172,24 @@ function draw_treemap() {
       g.append("foreignObject")
         .call(rect)
         .attr("class", "foreignobj")
+        .on("mousemove", function (d) {
+          if(d.depth == 1) {
+            tool.style("left", d3.event.pageX + 10 + "px")
+            tool.style("top", d3.event.pageY - 20 + "px")
+            tool.style("display", "inline-block");
+            tool.html(`
+              <div class="container-fluid p-3">
+                <h3>${d.data.name}</h3>
+                <small class="text-muted">${formatNumber(d.value)}</small>
+              </div>
+            `);
+          }
+        })
+        .on("mouseout", function (d) {
+          if(d.depth == 1) {
+            tool.style("display", "none");
+          }
+        })
         .append("xhtml:div")
           .attr("dy", ".75em")
           .html(function (d) {
