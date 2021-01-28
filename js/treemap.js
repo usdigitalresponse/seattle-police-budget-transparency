@@ -253,7 +253,7 @@ function draw_treemap() {
                 </div>
                 <div class="d-flex">
                   <div>
-                    <h6 class="mb-0">Civiian FTE</h6>
+                    <h6 class="mb-0">Civilian FTE</h6>
                     <div class="text-primary font-weight-bold">${d.data.values[0]['Civilian FTE']}</div>
                   </div>
                   <div class="ml-auto">
@@ -264,7 +264,7 @@ function draw_treemap() {
                 <div class="mt-2">
                   <h6 class="mb-0">Budget</h6>
                   <div class="text-primary font-weight-bold">${formatter.format(d.data.value)}</div>
-                </div>
+                 </div>
               </div>
             `);
           })
